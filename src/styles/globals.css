@@ -1,0 +1,288 @@
+:root {
+  font-family: system-ui, Arial, sans-serif;
+  --main: #080916;
+  --border: #2a2a2b;
+  --offwhite: rgb(205, 201, 216);
+  --accent-01: #2cb1fe;
+  --accent-02: #6380fe;
+  --accent-03: #c00c0c;
+  --accent-mix: color-mix(in srgb, var(--main) 80%, var(--accent-02) 20%);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background-color: var(--main);
+  color: white;
+}
+
+/* =============================================================== */
+/* APP LAYOUT */
+/* =============================================================== */
+
+.app-layout {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--accent-02);
+  height: 56px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  background: var(--main);
+  border-bottom: 2px solid var(--border);
+}
+
+.page-content {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  padding: 25px 150px 16px 150px;
+  background: linear-gradient(180deg, var(--main) 80%, var(--accent-mix));
+}
+
+/* =============================================================== */
+/* MAIN PAGE LAYOUT */
+/* =============================================================== */
+
+.shell {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+}
+
+.sidebar {
+  width: 320px;
+  min-width: 320px;
+  background: var(--main);
+  border-right: 2px solid var(--border);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  align-items: stretch;
+  gap: 16px;
+}
+
+/* =============================================================== */
+/* MAP */
+/* =============================================================== */
+
+.map.leaflet-container {
+  background: var(--main) !important;
+}
+
+.map-wrapper {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.map {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+}
+
+/* =============================================================== */
+/* RIGHT PANEL + FEED */
+/* =============================================================== */
+
+.right-panel {
+  flex: 0 0 320px;
+  width: 320px;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-left: 1px solid var(--border);
+  background: var(--main);
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.4);
+}
+
+.right-tabs {
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px 6px 16px;
+  background: var(--main);
+}
+
+.right-tab {
+  background: transparent;
+  color: var(--offwhite);
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.right-tab:hover {
+  border-color: var(--accent-01);
+  box-shadow: 0 0 10px rgba(44, 177, 254, 0.25);
+  transform: translateY(-1px);
+}
+
+.right-tab.is-active {
+  background: color-mix(in srgb, var(--accent-02) 22%, transparent);
+  border-color: var(--accent-02);
+  color: white;
+  box-shadow: 0 0 12px rgba(99, 128, 254, 0.25);
+}
+
+.right-tab:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  border-color: var(--border);
+}
+
+.incident-feed {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding-left: 16px;
+  font-size: 0.85rem;
+  background: transparent;
+  width: auto;
+  min-width: 0;
+}
+
+.incident-row:hover {
+  background: rgba(99, 128, 254, 0.12);
+  box-shadow: 0 0 6px rgba(99, 128, 254, 0.4),
+    0 0 12px rgba(99, 128, 254, 0.25);
+}
+
+/* =============================================================== */
+/* SHARED BUTTON */
+/* =============================================================== */
+
+.map-btn {
+  background-color: var(--main);
+  color: var(--accent-02);
+  font-weight: 700;
+  border: 2px solid var(--border);
+  padding: 8px 14px;
+  border-radius: 8px;
+  margin: 12px;
+  cursor: pointer;
+}
+
+.map-btn:hover {
+  box-shadow: 0 0 10px var(--accent-01);
+  border-color: var(--accent-01);
+  color: var(--accent-02);
+  transform: translateY(-1px);
+}
+
+/* =============================================================== */
+/* FILTER CHECKS */
+/* =============================================================== */
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px;
+  border-radius: 8px;
+  user-select: none;
+}
+
+.check:hover {
+  background: color-mix(in srgb, var(--main) 75%, white 25%);
+}
+
+.check input {
+  accent-color: var(--accent-02);
+}
+
+.check-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.check-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 10px;
+  max-height: 240px;
+  overflow: auto;
+  padding-right: 6px;
+}
+
+/* =============================================================== */
+/* HOME LOCATION PANEL */
+/* =============================================================== */
+
+.home-location-panel {
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  margin-bottom: 10px;
+}
+
+.home-location-title {
+  font-weight: 700;
+  margin-bottom: 8px;
+  opacity: 0.9;
+}
+
+.home-location-row {
+  display: grid;
+  grid-template-columns: 1fr 120px 90px;
+  gap: 8px;
+}
+
+.home-location-input,
+.home-location-radius,
+.home-location-save {
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.2);
+  color: white;
+  padding: 8px 10px;
+}
+
+.home-location-save {
+  cursor: pointer;
+}
+
+.home-location-msg {
+  margin-top: 8px;
+  opacity: 0.9;
+  font-size: 0.9rem;
+}
