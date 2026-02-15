@@ -1,73 +1,142 @@
-# React + TypeScript + Vite
+# 🧿 CrimeVision
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 📌 Description du projet
 
-Currently, two official plugins are available:
+CrimeVision est une application full-stack développée dans le cadre du cours **Services Web 1** (420-941-MA).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Le projet combine :
 
-## React Compiler
+- Un backend Express (Node.js + Prisma + PostgreSQL)
+- Un frontend React (Vite)
+- Un système d’authentification sécurisé via Clerk
+- Un filtrage géospatial avancé des incidents criminels
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+L’application permet aux utilisateurs de :
 
-## Expanding the ESLint configuration
+- S’inscrire et se connecter
+- Enregistrer une localisation domicile
+- Visualiser les incidents criminels sur une carte interactive
+- Filtrer les incidents par année, mois et catégorie
+- Afficher les incidents proches de leur domicile via un calcul de distance
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🏗 Architecture
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Backend
+- Node.js + Express
+- Prisma ORM
+- PostgreSQL (Neon)
+- Middleware Clerk JWT
+- API REST sécurisée
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Frontend
+- React 18 + Vite
+- TypeScript
+- React Router
+- React Leaflet (carte)
+- Clerk (authentification)
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🔐 Authentification
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Le projet utilise **Clerk** pour :
+
+- Inscription
+- Connexion
+- Déconnexion
+- Persistance de session
+- Protection des routes frontend et backend
+
+Les routes protégées redirigent automatiquement les utilisateurs non authentifiés.
+
+---
+
+## 🌍 Fonctionnalités principales
+
+### ✔ Module d’authentification
+- Inscription / Connexion
+- Gestion des sessions
+- Protection des routes
+
+### ✔ Dashboard
+- CRUD complet de la localisation domicile
+- Sauvegarde en base de données
+
+### ✔ Near You (Filtrage géospatial)
+- Bounding box pour filtrage rapide
+- Calcul de distance via formule de Haversine
+- Rayon configurable
+- Limitation sécurisée des requêtes
+
+### ✔ Carte interactive
+- Affichage des incidents
+- Synchronisation hover entre la liste et la carte
+- Filtrage dynamique
+
+### ✔ Filtres
+- Année
+- Mois
+- Catégorie
+
+---
+
+## 🔁 CRUD implémenté
+
+Ressource : `UserProfile`
+
+- CREATE : Enregistrement de la localisation domicile
+- READ : Récupération des données via `/api/me`
+- UPDATE : Modification du rayon ou position
+- DELETE : Suppression de la localisation domicile
+
+---
+
+## ⚙ Installation
+
+# 1️⃣ Cloner le projet
+git clone https://github.com/SimonHetu/crimevision.git
+cd crimevision
+
+# =====================================================
+# BACKEND
+# =====================================================
+
+cd backend
+
+# Installer les dépendances
+npm install
+
+# Copier le fichier d’environnement
+cp .env.example .env
+
+# Modifier le fichier .env avec vos variables :
+# DATABASE_URL=
+# CLERK_SECRET_KEY=
+# JWT_SECRET=
+
+# Appliquer les migrations Prisma
+npx prisma migrate dev
+
+# Lancer le serveur backend
+npm run dev
+
+# =====================================================
+# FRONTEND
+# =====================================================
+
+cd ../frontend
+
+# Installer les dépendances
+npm install
+
+# Copier le fichier d’environnement
+cp .env.example .env
+
+# Modifier le fichier .env :
+# VITE_CLERK_PUBLISHABLE_KEY=
+# VITE_API_BASE=http://localhost:3000
+
+# Lancer le serveur frontend
+npm run dev

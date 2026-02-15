@@ -107,7 +107,7 @@ export default function HomePage() {
   useEffect(() => {
     setLoading(true);
 
-    Promise.all([fetchIncidents({ limit: 5000 }), fetchPdqs()])
+    Promise.all([fetchIncidents({ limit: 20000 }), fetchPdqs()])
       .then(([incData, pdqData]) => {
         const cleanedIncidents = incData
           .map((x) => ({

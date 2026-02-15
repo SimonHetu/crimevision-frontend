@@ -1,18 +1,21 @@
+// src/components/map/MapView.tsx
 import { MapContainer, TileLayer, CircleMarker, Tooltip, Circle } from "react-leaflet";
 import { useMemo, useState } from "react";
 import type { Pdq } from "../services/pdq";
 import type { Incident } from "../services/incidents";
 
+// ===============================
+// CSS var helper (safe + memoized)
+// ===============================
+function useCssVar(name: string, fallback: string) {
+  return useMemo(() => {
+    // (Vite/React SPA: window exists, but this is a safe guard anyway)
+    if (typeof window === "undefined") return fallback;
 
-function getCssVar(name: string) {
-  return getComputedStyle(document.documentElement)
-    .getPropertyValue(name)
-    .trim();
+    const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    return v || fallback;
+  }, [name, fallback]);
 }
-
-const accent01 = getCssVar("--accent-01");
-const accent02 = getCssVar("--accent-02");
-
 
 // --- jitter helpers ---
 function coordKey(lat: number, lng: number, decimals = 5) {
@@ -46,11 +49,14 @@ type Props = {
   incidents: Incident[];
   pdqs: Pdq[];
   loading: boolean;
+
+  // highlight from right panel hover
   highlightedId?: number | null;
 
+  // PDQ toggle
   showPdqs?: boolean;
 
-  //  Near-you circle
+  // Near-you circle
   homeLat?: number | null;
   homeLng?: number | null;
   homeRadiusM?: number | null;
@@ -63,13 +69,16 @@ export default function MapView({
   loading,
   highlightedId,
   showPdqs = true,
-
   homeLat = null,
   homeLng = null,
   homeRadiusM = null,
   showHomeCircle = false,
 }: Props) {
   const [style, setStyle] = useState<"streets" | "satellite">("satellite");
+
+  // ✅ read your CSS vars safely (no "black" from empty string)
+  const accent01 = useCssVar("--accent-01", "#2cb1fe");
+  const accent02 = useCssVar("--accent-02", "#6380fe");
 
   const jitteredIncidents = useMemo(() => {
     const groups = new Map<string, Incident[]>();
@@ -124,6 +133,7 @@ export default function MapView({
         <button
           className="map-btn"
           onClick={() => setStyle(style === "streets" ? "satellite" : "streets")}
+          type="button"
         >
           {style === "streets" ? "Satellite" : "Streets"}
         </button>
@@ -163,47 +173,76 @@ export default function MapView({
           />
         )}
 
-        {/*  Home radius circle (Near you) */}
+        {/* Home radius circle (Near you) */}
         {canDrawHomeCircle && (
           <Circle
             center={[homeLat!, homeLng!]}
             radius={homeRadiusM!} // meters
             pathOptions={{
-              color: "#2cb1fe",
+              color: accent01,
               weight: 2,
-              fillColor: "#2cb1fe",
+              fillColor: accent01,
               fillOpacity: 0.12,
             }}
           />
         )}
 
-        {/* Incidents (jittered) */}
-        {jitteredIncidents.map((inc) => {
-          const isHot = highlightedId != null && inc.id === highlightedId;
+        {/* Normal incidents */}
+{jitteredIncidents
+  .filter((inc) => inc.id !== highlightedId)
+  .map((inc) => (
+    <CircleMarker
+      key={`inc-${inc.id}`}
+      center={[inc.jLat, inc.jLng]}
+      radius={5}
+      pathOptions={{
+        color: "#f74646",
+        weight: 2,
+        fillColor: "#ff2929",
+        fillOpacity: 0.5,
+      }}
+    >
+      <Tooltip direction="top" offset={[0, -6]} opacity={1}>
+        <div>
+          <div>{inc.category ?? "Unknown"}</div>
+          <div>{inc.date ?? ""}</div>
+          <div>id: {inc.id}</div>
+          {(inc as any).groupSize > 1 && (
+            <div>Overlaps here: {(inc as any).groupSize}</div>
+          )}
+        </div>
+      </Tooltip>
+    </CircleMarker>
+  ))}
 
-          return (
-            <CircleMarker
-              key={`inc-${inc.id}`}
-              center={[inc.jLat, inc.jLng]}
-              radius={isHot ? 11 : 5}
-              pathOptions={{
-                color: isHot ? accent02 : "#f74646",
-                weight: isHot ? 4 : 2,
-                fillColor: isHot ? accent02 : "#ff2929",
-                fillOpacity: isHot ? 0.9 : 0.5,
-              }}
-            >
-              <Tooltip direction="top" offset={[0, -6]} opacity={1}>
-                <div>
-                  <div>{inc.category ?? "Unknown"}</div>
-                  <div>{inc.date ?? ""}</div>
-                  <div>id: {inc.id}</div>
-                  {(inc as any).groupSize > 1 && <div>Overlaps here: {(inc as any).groupSize}</div>}
-                </div>
-              </Tooltip>
-            </CircleMarker>
-          );
-        })}
+      {/* Highlighted incident (rendered last = on top) */}
+      {jitteredIncidents
+        .filter((inc) => inc.id === highlightedId)
+        .map((inc) => (
+          <CircleMarker
+            key={`highlight-${inc.id}`}
+            center={[inc.jLat, inc.jLng]}
+            radius={12}
+            pathOptions={{
+              color: accent02,
+              weight: 4,
+              fillColor: accent02,
+              fillOpacity: 0.95,
+            }}
+          >
+            <Tooltip direction="top" offset={[0, -6]} opacity={1}>
+              <div>
+                <div>{inc.category ?? "Unknown"}</div>
+                <div>{inc.date ?? ""}</div>
+                <div>id: {inc.id}</div>
+                {(inc as any).groupSize > 1 && (
+                  <div>Overlaps here: {(inc as any).groupSize}</div>
+                )}
+              </div>
+            </Tooltip>
+          </CircleMarker>
+        ))}
+
 
         {/* PDQs (toggleable) */}
         {showPdqs &&

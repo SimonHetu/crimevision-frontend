@@ -23,9 +23,7 @@ type Props = {
   limit?: number;
   onHover?: (id: number | string | null) => void;
   filters: Filters;
-
-  // radius override (optional). If not provided, backend uses stored profile radius.
-  radiusM?: number | null;
+  radiusM?: number | null; // used only in home mode
 };
 
 function parseIncidentDate(dateStr?: string | null): Date | null {
@@ -49,7 +47,7 @@ export default function IncidentFeed({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // client-side filters 
+  // client-side filters (keeps behavior consistent with the map)
   const filteredItems = useMemo(() => {
     const hasYearFilter = filters.years.size > 0;
     const hasMonthFilter = filters.months.size > 0;
@@ -77,16 +75,29 @@ export default function IncidentFeed({
       setError(null);
 
       try {
-      // GET /api/me/incidents?mode=latest|home&limit=...&category=...&radiusM=...
         const qs = new URLSearchParams();
         qs.set("mode", mode);
         qs.set("limit", String(limit));
+
+        // Send year/month filters to backend ONLY for latest,
+        // so backend can fetch the right slice of data.
+        if (mode === "latest") {
+          if (filters.years.size > 0) {
+            qs.set("years", Array.from(filters.years).join(","));
+          }
+          if (filters.months.size > 0) {
+            qs.set("months", Array.from(filters.months).join(","));
+          }
+        }
+
         if (category) qs.set("category", category);
         if (mode === "home" && radiusM != null) qs.set("radiusM", String(radiusM));
 
         const path = `/api/me/incidents?${qs.toString()}`;
+        console.log("IncidentFeed URL:", `${API_BASE}${path}`);
 
-        const token = mode === "home" && isSignedIn ? await getToken() : null;
+        // latest is public, home is auth — sending token is fine either way
+        const token = isSignedIn ? await getToken() : null;
 
         const res = await fetch(`${API_BASE}${path}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -95,14 +106,13 @@ export default function IncidentFeed({
         const text = await res.text();
         if (!res.ok) throw new Error(`HTTP ${res.status}: ${text.slice(0, 200)}`);
 
-        let json: any;
+        let json: any = null;
         try {
           json = text ? JSON.parse(text) : null;
         } catch {
           throw new Error(`Expected JSON but got non-JSON: ${text.slice(0, 200)}`);
         }
 
-        // returns { success, mode, items }
         const nextItems = Array.isArray(json?.items) ? (json.items as IncidentItem[]) : [];
 
         if (!cancelled) setItems(nextItems);
@@ -121,7 +131,7 @@ export default function IncidentFeed({
     return () => {
       cancelled = true;
     };
-  }, [mode, category, limit, radiusM, isSignedIn, getToken]);
+  }, [mode, category, limit, radiusM, isSignedIn, getToken, filters]);
 
   return (
     <div className="incident-feed" onMouseLeave={() => onHover?.(null)}>
