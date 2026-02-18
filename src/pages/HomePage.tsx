@@ -419,6 +419,12 @@ export default function HomePage() {
             </div>
           ) : null}
 
+          {inNearTab && homeStatus === "set" ? (
+            <div style={{ padding: "0 12px 12px", fontSize: 13, opacity: 0.9 }}>
+              Radius: {homeRadiusM ?? "default"} m
+            </div>
+          ) : null}
+
           <IncidentFeed
             incidents={filteredIncidents}
             onHover={(id) => {
