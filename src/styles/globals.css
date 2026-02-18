@@ -370,11 +370,19 @@ body {
 
   .page-content {
     padding: 12px;
+    overflow: auto;
+  }
+
+  .main {
+    min-height: 0;
+    flex-direction: column;
   }
 
 
   .shell {
     flex-direction: column;
+    overflow: visible;
+    
   }
 
 
@@ -383,6 +391,8 @@ body {
     min-width: 0;
     border-right: none;
     border-bottom: 2px solid var(--border);
+    max-height: 45vh;
+    overflow-y: auto;
   }
 
 
