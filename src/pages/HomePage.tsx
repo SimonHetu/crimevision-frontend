@@ -42,6 +42,7 @@ export default function HomePage() {
   const [nearIncidents, setNearIncidents] = useState<Incident[]>([]);
   const [nearLoading, setNearLoading] = useState(false);
   const [nearError, setNearError] = useState<string>("");
+  const [nearRefresh, setNearRefresh] = useState(0);
 
   const [highlightedId, setHighlightedId] = useState<number | null>(null);
   const [feedTab, setFeedTab] = useState<"latest" | "home">("latest");
@@ -296,7 +297,7 @@ export default function HomePage() {
 
         const qs = new URLSearchParams();
         qs.set("mode", "home");
-        qs.set("limit", "200");
+        qs.set("limit", "1000");
         if (prof.homeRadiusM != null) qs.set("radiusM", String(prof.homeRadiusM));
 
         const json = await authedJson(`${apiBase}/api/me/incidents?${qs.toString()}`);
@@ -324,7 +325,7 @@ export default function HomePage() {
         setNearLoading(false);
       }
     })();
-  }, [feedTab, isSignedIn, apiBase]);
+  }, [feedTab, isSignedIn, apiBase, nearRefresh]);
 
   // ---------------------------
   // Active dataset for MAP:
@@ -405,12 +406,17 @@ export default function HomePage() {
             <button
               className={`right-tab ${feedTab === "home" ? "is-active" : ""}`}
               type="button"
-              onClick={() => setFeedTab("home")}
+              onClick={() => {
+                setNearError("");
+                setFeedTab("home");
+                setNearRefresh((n) => n + 1);
+              }}
               disabled={!isSignedIn}
               title={!isSignedIn ? "Sign in to use Near you" : undefined}
             >
               🔊 Near you {!isSignedIn ? "🔒" : ""}
             </button>
+
           </div>
 
           {inNearTab && nearError ? (
