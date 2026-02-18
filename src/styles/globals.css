@@ -21,8 +21,27 @@ body {
   color: white;
 }
 
-/* =============================================================== */
-/* APP LAYOUT */
+
+.title {
+  color: var(--accent-02);
+  flex: 1;
+  font-weight: 600;
+  font-size: 1.2rem;
+  text-decoration: none;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.title-right {
+  color: var(--accent-02);
+  font-weight: 600;
+  font-size: 1.2rem;
+  text-decoration: none;
+}
+
+
 /* =============================================================== */
 
 .app-layout {
@@ -48,9 +67,10 @@ body {
   display: flex;
   min-height: 0;
   flex-direction: column;
-  padding: 25px 150px 16px 150px;
+  padding: 25px clamp(12px, 6vw, 150px) 16px clamp(12px, 6vw, 150px);
   background: linear-gradient(180deg, var(--main) 80%, var(--accent-mix));
 }
+
 
 /* =============================================================== */
 /* MAIN PAGE LAYOUT */
@@ -61,18 +81,23 @@ body {
   min-height: 0;
   width: 100%;
   display: flex;
+  overflow: hidden;
 }
 
 .sidebar {
-  width: 320px;
-  min-width: 320px;
+  width: clamp(260px, 22vw, 340px);
+  min-width: 260px;
   background: var(--main);
   border-right: 2px solid var(--border);
   padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+
+  min-height: 0;
+  overflow-y: auto;
 }
+
 
 .main {
   flex: 1;
@@ -115,9 +140,9 @@ body {
 /* =============================================================== */
 
 .right-panel {
-  flex: 0 0 320px;
-  width: 320px;
-  min-width: 320px;
+  flex: 0 0 clamp(260px, 22vw, 340px);
+  width: clamp(260px, 22vw, 340px);
+  min-width: 260px;
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -285,4 +310,97 @@ body {
   margin-top: 8px;
   opacity: 0.9;
   font-size: 0.9rem;
+}
+
+
+/*===================================================*/
+/* FOOTER*/
+/*===================================================*/
+.app-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: auto;
+  padding: 16px 24px;
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-link {
+  color: var(--accent-02);
+  text-decoration: none;
+}
+
+.footer-link:hover {
+  opacity: 0.85;
+}
+
+
+/*===================================================*/
+/* LOGO */
+/*===================================================*/
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar-logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.topbar-logo {
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+}
+
+
+
+/* =============================================================== */
+/* MOBILE RESPONSIVE */
+/* =============================================================== */
+@media (max-width: 900px) {
+
+  .page-content {
+    padding: 12px;
+  }
+
+
+  .shell {
+    flex-direction: column;
+  }
+
+
+  .sidebar {
+    width: 100%;
+    min-width: 0;
+    border-right: none;
+    border-bottom: 2px solid var(--border);
+  }
+
+
+  .map-wrapper {
+    min-height: 50vh;
+  }
+
+
+  .right-panel {
+    width: 100%;
+    min-width: 0;
+    flex: 0 0 auto;
+    border-left: none;
+    border-top: 1px solid var(--border);
+  }
+
+ 
+  .incident-feed {
+    max-height: 40vh;
+  }
 }

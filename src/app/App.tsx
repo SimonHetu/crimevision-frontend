@@ -4,6 +4,8 @@ import AppLayout from "../layouts/AppLayout";
 import HomePage from "../pages/HomePage";
 import DashboardPage from "../pages/DashboardPage";
 import ProtectedRoute from "./ProtectedRoute";
+import PrivacyPage from "../pages/PrivacyPage";
+
 
 export default function App() {
   return (
@@ -23,6 +25,7 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/privacy" element={<PrivacyPage />} />
       </Route>
     </Routes>
   );

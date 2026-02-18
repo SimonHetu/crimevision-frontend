@@ -1,4 +1,4 @@
-// src/pages/HomePage.tsx
+
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@clerk/clerk-react";
 import MapView from "../components/map/MapView";
@@ -47,9 +47,10 @@ export default function HomePage() {
   const [feedTab, setFeedTab] = useState<"latest" | "home">("latest");
   const [syncedUser, setSyncedUser] = useState(false);
 
-  // store radius so we can pass it to IncidentFeed
+  // store radius so we can pass it to IncidentFeed (Near you)
   const [homeRadiusM, setHomeRadiusM] = useState<number | null>(null);
   const [homeStatus, setHomeStatus] = useState<HomeStatus>("unknown");
+
 
   // PDQ toggle
   const [showPdqs, setShowPdqs] = useState(true);
@@ -107,7 +108,7 @@ export default function HomePage() {
   useEffect(() => {
     setLoading(true);
 
-    Promise.all([fetchIncidents({ limit: 20000 }), fetchPdqs()])
+    Promise.all([fetchIncidents({ limit: 30000 }), fetchPdqs()])
       .then(([incData, pdqData]) => {
         const cleanedIncidents = incData
           .map((x) => ({
@@ -168,11 +169,12 @@ export default function HomePage() {
     setFilters((f) => {
       if (f.years.size || f.months.size || f.categories.size) return f;
 
-      return {
-        years: new Set(availableYears),
-        months: new Set<number>([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]),
-        categories: new Set(availableCategories),
-      };
+      return { years: new Set(), months: new Set(), categories: new Set() };
+        
+        // years: new Set(availableYears),
+        // months: new Set<number>([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]),
+        // categories: new Set(availableCategories),
+      // };
     });
   }, [allIncidents.length, availableYears, availableCategories]);
 
@@ -360,7 +362,7 @@ export default function HomePage() {
   return (
     <div className="shell">
       <Sidebar
-        incidents={allIncidents}
+        incidents={filteredIncidents}
         pdqs={pdqs}
         loading={loading}
         availableYears={availableYears}
@@ -418,16 +420,14 @@ export default function HomePage() {
           ) : null}
 
           <IncidentFeed
-            mode={!isSignedIn && feedTab === "home" ? "latest" : feedTab}
-            radiusM={feedTab === "home" ? homeRadiusM : null}
+            incidents={filteredIncidents}
             onHover={(id) => {
               if (id == null) return setHighlightedId(null);
               const n = typeof id === "string" ? Number(id) : id;
               setHighlightedId(Number.isFinite(n) ? n : null);
             }}
-            filters={filters}
-            limit={500}
           />
+
         </div>
       </main>
     </div>
