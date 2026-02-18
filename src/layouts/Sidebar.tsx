@@ -1,8 +1,6 @@
 import React from "react";
 import type { Incident } from "../components/services/incidents";
 import type { Pdq } from "../components/services/pdq";
-import logo from "../assets/crimevision_logo_10.png";
-
 
 type Filters = {
   years: Set<number>;
