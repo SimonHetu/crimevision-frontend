@@ -1,10 +1,10 @@
-🎤 PRÉSENTATION ORALE – CRIMEVISION (15 MINUTES)
+PRÉSENTATION ORALE – CRIMEVISION
 
 ========================================
 0:00 – 1:30 | INTRODUCTION
 ========================================
 
-Bonjour, je vais vous présenter CrimeVision, une application full-stack développée dans le cadre du laboratoire 3 du cours Services Web 1.
+Bonjour, je vais vous présenter CrimeVision, une application full-stack développée dans le cadre du laboratoire 3 du cours Services Web.
 
 L’objectif du projet était de compléter le backend du laboratoire 2 avec :
 

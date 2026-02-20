@@ -1,142 +1,126 @@
 # 🧿 CrimeVision
 
-## 📌 Description du projet
-
-CrimeVision est une application full-stack développée dans le cadre du cours **Services Web 1** (420-941-MA).
-
-Le projet combine :
-
-- Un backend Express (Node.js + Prisma + PostgreSQL)
-- Un frontend React (Vite)
-- Un système d’authentification sécurisé via Clerk
-- Un filtrage géospatial avancé des incidents criminels
-
-L’application permet aux utilisateurs de :
-
-- S’inscrire et se connecter
-- Enregistrer une localisation domicile
-- Visualiser les incidents criminels sur une carte interactive
-- Filtrer les incidents par année, mois et catégorie
-- Afficher les incidents proches de leur domicile via un calcul de distance
+Application full-stack développée dans le cadre du cours **Services Web 1 (420-941-MA)**  
+Collège de Maisonneuve — Hiver 2026
 
 ---
 
-## 🏗 Architecture
+#  Description
 
-### Backend
-- Node.js + Express
+CrimeVision est une application web permettant de visualiser des incidents criminels sur une carte interactive et d’effectuer un filtrage géospatial avancé.
+
+L’objectif est de démontrer :
+
+- Une intégration complète Frontend + Backend
+- Un système d’authentification sécurisé
+- Une architecture client-serveur moderne
+- Une gestion propre des appels API et de la sécurité
+
+---
+
+# 🏗 Architecture
+
+## Backend
+- Node.js
+- Express
 - Prisma ORM
 - PostgreSQL (Neon)
-- Middleware Clerk JWT
+- Middleware JWT (Clerk)
 - API REST sécurisée
 
-### Frontend
-- React 18 + Vite
+## Frontend
+- React 18
+- Vite
 - TypeScript
-- React Router
-- React Leaflet (carte)
-- Clerk (authentification)
+- React Router DOM
+- React Leaflet
+- Clerk Authentication
 
 ---
 
-## 🔐 Authentification
+# 🔐 Authentification
 
 Le projet utilise **Clerk** pour :
 
 - Inscription
 - Connexion
 - Déconnexion
-- Persistance de session
-- Protection des routes frontend et backend
+- Gestion sécurisée des sessions
+- Protection des routes frontend
+- Vérification JWT côté backend
 
-Les routes protégées redirigent automatiquement les utilisateurs non authentifiés.
+Les routes protégées redirigent automatiquement vers `/sign-in` si l’utilisateur n’est pas authentifié.
 
 ---
 
-## 🌍 Fonctionnalités principales
+# 🌍 Fonctionnalités
 
-### ✔ Module d’authentification
-- Inscription / Connexion
-- Gestion des sessions
+## ✔ Authentification complète
+- Inscription
+- Connexion
+- Persistance de session
 - Protection des routes
 
-### ✔ Dashboard
-- CRUD complet de la localisation domicile
+## ✔ Dashboard utilisateur
+- Gestion de la localisation domicile
 - Sauvegarde en base de données
+- Suppression de la localisation
 
-### ✔ Near You (Filtrage géospatial)
-- Bounding box pour filtrage rapide
-- Calcul de distance via formule de Haversine
+## ✔ Filtrage géospatial (Near You)
+- Bounding box pour optimisation
+- Calcul de distance (formule de Haversine)
 - Rayon configurable
-- Limitation sécurisée des requêtes
+- Requêtes limitées côté serveur
 
-### ✔ Carte interactive
-- Affichage des incidents
-- Synchronisation hover entre la liste et la carte
-- Filtrage dynamique
+## ✔ Carte interactive
+- Affichage dynamique des incidents
+- Gestion des chevauchements (jitter algorithm)
+- Synchronisation hover liste ↔ carte
+- Toggle satellite / streets
 
-### ✔ Filtres
+## ✔ Filtres dynamiques
 - Année
 - Mois
 - Catégorie
 
 ---
 
-## 🔁 CRUD implémenté
+# 🔁 CRUD Implémenté
 
 Ressource : `UserProfile`
 
-- CREATE : Enregistrement de la localisation domicile
-- READ : Récupération des données via `/api/me`
-- UPDATE : Modification du rayon ou position
-- DELETE : Suppression de la localisation domicile
+- CREATE → Enregistrement de la localisation domicile
+- READ → Récupération via `/api/me`
+- UPDATE → Modification rayon / position
+- DELETE → Suppression logique (remise à null)
 
 ---
 
-## ⚙ Installation
+# ⚙ Prérequis
 
-# 1️⃣ Cloner le projet
+- Node.js 18+
+- npm 9+
+- Backend CrimeVision en cours d’exécution (http://localhost:3000)
+- Compte Clerk configuré
+
+---
+
+# 🚀 Installation (Frontend)
+
+## 1. Cloner le projet
+
 git clone https://github.com/SimonHetu/crimevision.git
-cd crimevision
+cd crimevision/frontend
 
-# =====================================================
-# BACKEND
-# =====================================================
-
-cd backend
-
-# Installer les dépendances
+## 2. Installation des dépendances
 npm install
 
-# Copier le fichier d’environnement
+## 3. Creation du .env
 cp .env.example .env
 
-# Modifier le fichier .env avec vos variables :
-# DATABASE_URL=
-# CLERK_SECRET_KEY=
-# JWT_SECRET=
+## 4. ajout de clé clerk dans le .env
+VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+VITE_API_BASE=http://localhost:3000
 
-# Appliquer les migrations Prisma
-npx prisma migrate dev
-
-# Lancer le serveur backend
-npm run dev
-
-# =====================================================
-# FRONTEND
-# =====================================================
-
-cd ../frontend
-
-# Installer les dépendances
-npm install
-
-# Copier le fichier d’environnement
-cp .env.example .env
-
-# Modifier le fichier .env :
-# VITE_CLERK_PUBLISHABLE_KEY=
-# VITE_API_BASE=http://localhost:3000
-
-# Lancer le serveur frontend
+## 5. Demarrage
 npm run dev

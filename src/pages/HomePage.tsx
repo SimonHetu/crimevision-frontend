@@ -57,7 +57,7 @@ export default function HomePage() {
   const [showPdqs, setShowPdqs] = useState(true);
 
   // ---------------------------
-  // Sync user to DB once signed-in (your existing route)
+  // Sync user to DB once signed-in
   // ---------------------------
   useEffect(() => {
     if (!isSignedIn || syncedUser) return;

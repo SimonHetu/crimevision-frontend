@@ -20,7 +20,6 @@ Leaflet est une librairie JavaScript légère pour afficher des cartes interacti
 Elle permet d’ajouter des marqueurs, popups, couches, heatmaps, géolocalisation, etc.
 🧿 Dans CrimeVision : affiche les crimes directement sur la carte.
 
-
 ### OpenStreetMap (OSM) 🌍
 OpenStreetMap est une base de données cartographique libre et collaborative (routes, bâtiments, villes…)
 Elle fournit les tuiles de carte que Leaflet utilise comme fond visuel.

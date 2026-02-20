@@ -3,7 +3,7 @@ Cours Services Web
 Session Automne 2025
 ---
 
-# 📄 RAPPORT TECHNIQUE (PDF)
+# RAPPORT TECHNIQUE
 
 Voici une version structurée prête à mettre dans ton PDF.
 

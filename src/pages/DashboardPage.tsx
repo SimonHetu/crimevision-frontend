@@ -21,7 +21,7 @@ export default function DashboardPage() {
   const [status, setStatus] = useState<string>("");
   const [saving, setSaving] = useState(false);
 
-  // ---- helpers ----
+  // helpers
   async function authedJson(url: string, init: RequestInit = {}) {
     const token = await getToken();
     if (!token) throw new Error("No Clerk token (not signed in)");
