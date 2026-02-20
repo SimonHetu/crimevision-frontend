@@ -122,5 +122,5 @@ cp .env.example .env
 VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
 VITE_API_BASE=http://localhost:3000
 
-## 5. Demarrage
+## 5. Démarrage
 npm run dev

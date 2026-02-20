@@ -1,12 +1,33 @@
+// Sidebar.tsx = panneau de filtres + état global visible (statut / couches / filtres)
+// Rôle :
+//  - Afficher le nombre d’incidents/PDQs + le nombre filtré
+//  - Permettre de toggler l’affichage des PDQs (layer map)
+//  - Gérer les filtres (année, mois, catégorie) via des checkboxes
+//  - Supporter "All" (tout sélectionner/désélectionner) pour chaque groupe
+//  - Fournir un bouton "Clear all" (reset des filtres à vide)
+
+// =========================================================
+// IMPORTS + TYPES
+// =========================================================
 import React from "react";
 import type { Incident } from "../components/services/incidents";
 import type { Pdq } from "../components/services/pdq";
 
+// Filters = état des filtres : on utilise des Set pour des tests rapides
 type Filters = {
   years: Set<number>;
-  months: Set<number>;
+  months: Set<number>;      // months stocke les index 0..11
   categories: Set<string>;
 };
+
+
+// Props = tout vient du parent (Sidebar est "dumb UI"):
+// - données (incidents/pdqs) + loading
+// - options (availableYears/categories)
+// - état filtres + setFilters (state lifté dans le parent)
+// - info de rendu (filteredCount)
+// - toggle PDQ (showPdqs + setShowPdqs)
+// - helpers "All" calculés par le parent + fonctions toggleAll*
 
 type Props = {
   incidents: Incident[];
@@ -35,8 +56,12 @@ type Props = {
   toggleAllCategories: () => void;
 };
 
+// Labels de mois affichés à l’écran (index = mois dans filters.months)
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
+
+// Helper immuable : on ne modifie pas le Set reçu (important pour React state)
+// -> on clone (new Set) puis on add/delete
 function toggleInSet<T>(set: Set<T>, value: T) {
   const next = new Set(set);
   if (next.has(value)) next.delete(value);
@@ -44,6 +69,10 @@ function toggleInSet<T>(set: Set<T>, value: T) {
   return next;
 }
 
+
+// =========================================================
+// COMPOSANT
+// =========================================================
 export default function Sidebar({
   incidents,
   pdqs,
@@ -65,12 +94,16 @@ export default function Sidebar({
   toggleAllCategories,
 }: Props) {
   return (
+    // <aside> = élément sémantique "sidebar"
     <aside className="sidebar">
+
+      {/* Header */}
       <div className="sidebar-header">
         <div className="sidebar-title">CrimeVision</div>
         <div className="sidebar-subtitle">Montréal map</div>
       </div>
 
+      {/* STATUS : loading + compteurs */}
       <div className="sidebar-section">
         <div className="sidebar-label">Status</div>
         <div className="sidebar-card">
@@ -78,9 +111,13 @@ export default function Sidebar({
             <div>Loading…</div>
           ) : (
             <div>
+
+              {/* total brut */}
               <div>
                 {incidents.length} incidents • {pdqs.length} PDQs
               </div>
+
+              {/* nombre après filtres */}
               <div style={{ marginTop: 6, opacity: 0.8 }}>
                 Showing: <b>{filteredCount}</b>
               </div>
@@ -89,7 +126,7 @@ export default function Sidebar({
         </div>
       </div>
 
-      {/*  Map layers / PDQ toggle */}
+      {/* MAP LAYERS : toggle PDQ */}
       <div className="sidebar-section">
         <div className="sidebar-label">Map layers</div>
         <div className="sidebar-card">
@@ -104,7 +141,7 @@ export default function Sidebar({
         </div>
       </div>
 
-      {/* Year */}
+      {/* YEAR : "All" + liste des années disponibles */}
       <div className="sidebar-section">
         <div className="sidebar-label">Year</div>
         <div className="sidebar-card">
@@ -128,7 +165,7 @@ export default function Sidebar({
         </div>
       </div>
 
-      {/* Month */}
+      {/* MONTH : "All" + 12 mois (index 0..11) */}
       <div className="sidebar-section">
         <div className="sidebar-label">Month</div>
         <div className="sidebar-card">
@@ -154,7 +191,7 @@ export default function Sidebar({
         </div>
       </div>
 
-      {/* Category */}
+      {/* CATEGORY : "All" + liste des catégories disponibles */}
       <div className="sidebar-section">
         <div className="sidebar-label">Category</div>
         <div className="sidebar-card">
@@ -183,7 +220,8 @@ export default function Sidebar({
           </div>
         </div>
       </div>
-
+      
+      {/* RESET : remet tous les sets à vide (aucun filtre sélectionné) */}
       <div className="sidebar-section">
         <button
           className="map-btn"

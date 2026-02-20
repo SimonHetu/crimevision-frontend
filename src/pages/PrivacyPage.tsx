@@ -36,7 +36,7 @@ export default function PrivacyPage() {
 
       <h2>5. Contact</h2>
       <p>
-        For privacy-related questions, contact: your-email@example.com
+        For privacy-related questions, contact: info@crimevision.com
       </p>
     </div>
   );
