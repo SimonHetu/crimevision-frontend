@@ -8,14 +8,14 @@
 // =========================================================
 // IMPORTS
 // =========================================================
-// React Router permet de définir les routes (navigation SPA)
+// React Router permet de définir les routes (navigation SPA (single page application))
 import { Routes, Route } from "react-router-dom";
 
 // Composants d’authentification fournis par Clerk
 // SignIn et SignUp gèrent toute l’UI + logique d’auth
 import { SignIn, SignUp } from "@clerk/clerk-react";
 
-// Layout principal de l'application (header, sidebar, structure commune)
+// Layout principal de l'application (header, footer, structure commune)
 import AppLayout from "../layouts/AppLayout";
 
 // Pages principales

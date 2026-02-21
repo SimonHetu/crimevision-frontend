@@ -2,7 +2,7 @@
 // Point d’entrée principal React
 // -----------------------------
 // - Boot de l'application
-// - Démarre React et configure tous les configure les 
+// - Démarre React et configure
 
 import React from "react";
 import ReactDOM from "react-dom/client";

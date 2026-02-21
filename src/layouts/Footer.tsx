@@ -1,5 +1,5 @@
 // Import du composant Link depuis react-router-dom
-// Permet de naviguer entre les routes sans recharger la page (navigation SPA)
+// Permet de naviguer entre les routes sans recharger la page (navigation SPA (single page application))
 
 import { Link } from "react-router-dom";
 

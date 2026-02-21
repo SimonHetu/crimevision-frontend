@@ -1,16 +1,34 @@
-
-// AppLayout définit la structure globale partagée par toutes les pages.
-// Il contient le header, la navigation conditionnelle selon l’authentification et le footer.
-// Le composant Outlet est essentiel : il agit comme un placeholder où React Router injecte dynamiquement la page active.
-// L’authentification est gérée côté UI avec SignedIn et SignedOut, ce qui permet d’afficher des éléments différents selon l’état de connexion.
-
-// AppLayout.tsx définit la structure globale de l'application.
-// Définit :
-//   - Le header (topbar)
-//   - La navigation (Home, Sign in, Dashboard)
-//   - L’intégration Clerk (SignedIn / SignedOut / UserButton)
+// =========================================================
+// AppLayout.tsx
+// =========================================================
+//
+// AppLayout définit la structure globale partagée par toutes les pages de l’application.
+//
+// Il centralise :
+//   - Le Header (topbar)
+//   - La navigation principale (Home, Sign in, Dashboard)
+//   - L’intégration de l’authentification via Clerk (SignedIn / SignedOut / UserButton)
 //   - L’espace dynamique pour les pages via <Outlet />
 //   - Le Footer global
+//
+// Le composant <Outlet /> est essentiel :
+// Il agit comme un placeholder où React Router injecte dynamiquement
+// la page correspondant à la route active.
+//
+// Exemple :
+//   "/"           → HomePage
+//   "/dashboard"  → DashboardPage
+//
+// L’authentification est gérée côté UI grâce à SignedIn et SignedOut,
+// ce qui permet d’afficher une navigation différente selon l’état
+// de connexion de l’utilisateur.
+//
+// Ce layout permet d’éviter la duplication du Header et du Footer
+// dans chaque page et garantit une structure cohérente dans toute l’application.
+//
+// AppLayout joue donc le rôle d’orchestrateur visuel global,
+// tandis que les pages injectées via Outlet gèrent la logique métier spécifique.
+
 
 // =========================================================
 // IMPORTS
@@ -84,7 +102,7 @@ export default function AppLayout() {
         Outlet est l’emplacement où React Router injecte
         la page correspondant à la route actuelle.
         Exemple :
-        - "/" -> HomePage
+        - "/"  -> HomePage
         - "/dashboard" -> DashboardPage
       */}
       <main className="page-content">

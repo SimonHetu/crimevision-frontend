@@ -4,23 +4,26 @@
 // - Charge le dataset "Latest" (base) + PDQs pour la carte et le sidebar
 // - Offre un onglet "Near you" (incidents autour de la position Home du user)
 // - Applique des filtres (année, mois, catégorie) via des Sets
-// - Synchronise le survol feed ↔ surbrillance sur la carte (highlightedId)
+// - Synchronise le survol feed <=> surbrillance sur la carte (highlightedId)
 // =========================================================
 
 import { useEffect, useMemo, useState } from "react"; // Hooks React: state + effets + memoization
 import { useAuth } from "@clerk/clerk-react"; // Clerk: auth front (isSignedIn + getToken)
+
 import MapView from "../components/map/MapView"; // Carte Leaflet (incidents + PDQs)
 import Sidebar from "../layouts/Sidebar"; // UI filtres + infos (count, toggles, etc.)
+import IncidentFeed from "../components/ui/IncidentFeed"; // Liste des incidents (hover sync)
+
 import { fetchIncidents, type Incident } from "../components/services/incidents"; // Service API incidents
 import { fetchPdqs, type Pdq } from "../components/services/pdq"; // Service API PDQs
-import IncidentFeed from "../components/ui/IncidentFeed"; // Liste des incidents (hover sync)
+
 
 
 // =========================================================
 // TYPES
 // =========================================================
 
-// Filtres: Sets = parfait pour "toggle" sans doublons + immutabilité facile
+// Filtres: Sets = pour "toggle" sans doublons
 type Filters = {
   years: Set<number>;
   months: Set<number>;
@@ -124,7 +127,7 @@ export default function HomePage() {
 
 
   // =========================================================
-  // 1) SYNC USER TO DB (ONE-TIME)
+  // 1) SYNC USER TO DB (une fois)
   // =========================================================
   // Objectif:
   // Quand l'utilisateur se connecte (Clerk),
@@ -275,12 +278,11 @@ export default function HomePage() {
   // But: au premier load, si aucun filtre sélectionné,
   // on initialise une sélection "par défaut".
   //
-  // IMPORTANT:
-  // ici, ton code fait intentionnellement un reset à empty sets
+  // On fait intentionnellement un reset à empty sets
   // (ce qui rend filteredIncidents vide)
   //
   // Les lignes commentées montrent l’intention possible de "select all".
-  // => si tu veux que "tout" s’affiche par défaut,
+  // => si on veut que "tout" s’affiche par défaut,
   // il faut activer les sets préremplis.
 
   useEffect(() => {
@@ -370,11 +372,11 @@ export default function HomePage() {
   // =========================================================
   // 7) AUTHED FETCH HELPER
   // =========================================================
-  // Même logique que sur DashboardPage:
+  // Helper qui centralise les appels API nécessitant une authentification
   // - récupère token Clerk
   // - fetch avec Bearer
   // - parse json
-  // - throw si !ok
+  // - normalise les erreurs HTTP
 
   async function authedJson(url: string, init: RequestInit = {}) {
     const token = await getToken();
@@ -436,7 +438,7 @@ export default function HomePage() {
           setHomeStatus("unset");
           setHomeRadiusM(null);
           setNearIncidents([]);
-          setNearError("Home location not set. Go to Dashboard → Save (use GPS).");
+          setNearError("Home location not set. Go to Dashboard => Save (use GPS).");
           return;
         }
         
@@ -447,7 +449,7 @@ export default function HomePage() {
         // Build query string vers route backend
         const qs = new URLSearchParams();
         qs.set("mode", "home");
-        qs.set("limit", "1000"); // NOTE: ton backend cap à 200, donc safe
+        qs.set("limit", "1000");
         if (prof.homeRadiusM != null) qs.set("radiusM", String(prof.homeRadiusM));
 
         // Récupère incidents near
@@ -498,11 +500,9 @@ export default function HomePage() {
   // =========================================================
   // 10) FILTER INCIDENTS FOR MAP (SETS)
   // =========================================================
-  // Ici tu appliques les filtres au dataset actif.
-  // IMPORTANT:
+  // On appliques les filtres au dataset actif.
   // - si l'un des Sets est vide => retour []
   //   (logique "aucun filtre choisi => rien à afficher")
-  //   => si tu veux "vide = all", tu changerais cette condition.
 
   const filteredIncidents = useMemo(() => {
     if (filters.years.size === 0) return [];
@@ -533,9 +533,9 @@ export default function HomePage() {
   return (
     <div className="shell">
       <Sidebar
-        incidents={filteredIncidents} // IMPORTANT: sidebar reçoit déjà filtré
+        incidents={filteredIncidents} // sidebar reçoit déjà filtré
         pdqs={pdqs}
-        loading={loading}  // NOTE: ici on passes loading base, pas activeLoading
+        loading={loading}  // On passes loading base, pas activeLoading
         availableYears={availableYears}
         availableCategories={availableCategories}
         filters={filters}
