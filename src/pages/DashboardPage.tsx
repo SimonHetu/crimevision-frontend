@@ -387,8 +387,7 @@ export default function DashboardPage() {
           
           {/* Note technique: justification du design / futur geocoding */}
           <div style={{ marginTop: 10, fontSize: 13, opacity: 0.75 }}>
-            Note: l’input “address” est un label pour l’instant. Pour convertir une adresse en lat/lng,
-            il faudra ajouter un geocoding (Mapbox/Google/Nominatim) ou un picker sur la map.
+            
           </div>
         </div>
       </div>
