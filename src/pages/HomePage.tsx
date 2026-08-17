@@ -16,6 +16,7 @@ import IncidentFeed from "../components/ui/IncidentFeed"; // Liste des incidents
 
 import { fetchIncidents, type Incident } from "../components/services/incidents"; // Service API incidents
 import { fetchPdqs, type Pdq } from "../components/services/pdq"; // Service API PDQs
+import { startSupportCheckout, type SupportTier } from "../components/services/payments";
 
 
 
@@ -124,6 +125,9 @@ export default function HomePage() {
 
   // Toggle d'affichage des PDQs sur la map
   const [showPdqs, setShowPdqs] = useState(true);
+
+  const [supportLoading, setSupportLoading] = useState<SupportTier | null>(null);
+  const [supportError, setSupportError] = useState("");
 
 
   // =========================================================
@@ -524,6 +528,17 @@ export default function HomePage() {
     });
   }, [activeIncidents, filters]);
 
+  async function handleSupportClick(tier: SupportTier) {
+    try {
+      setSupportError("");
+      setSupportLoading(tier);
+      await startSupportCheckout(getToken, tier);
+    } catch (e: any) {
+      setSupportError(e?.message ?? "Unable to open Stripe Checkout.");
+      setSupportLoading(null);
+    }
+  }
+
   // =========================================================
   // RENDER
   // =========================================================
@@ -606,6 +621,31 @@ export default function HomePage() {
               Radius: {homeRadiusM ?? "default"} m
             </div>
           ) : null}
+
+          <section className="support-panel" aria-label="Support CrimeVision">
+            <div className="support-panel-title">Support CrimeVision</div>
+            <div className="support-panel-copy">
+              Help keep alerts, maps, and data imports moving.
+            </div>
+            <div className="support-actions">
+              {[
+                { tier: "support_1" as const, label: "$1" },
+                { tier: "support_5" as const, label: "$5" },
+                { tier: "support_10" as const, label: "$10" },
+              ].map((item) => (
+                <button
+                  key={item.tier}
+                  className="support-button"
+                  type="button"
+                  onClick={() => handleSupportClick(item.tier)}
+                  disabled={supportLoading !== null}
+                >
+                  {supportLoading === item.tier ? "Opening..." : item.label}
+                </button>
+              ))}
+            </div>
+            {supportError ? <div className="support-error">{supportError}</div> : null}
+          </section>
 
           {/* Feed: même data filtrée que la carte */}
           <IncidentFeed

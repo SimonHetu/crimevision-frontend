@@ -191,6 +191,59 @@ body {
   border-color: var(--border);
 }
 
+.support-panel {
+  margin: 8px 16px 12px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.support-panel-title {
+  font-weight: 800;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.support-panel-copy {
+  color: var(--offwhite);
+  font-size: 0.82rem;
+  line-height: 1.35;
+  margin-bottom: 10px;
+}
+
+.support-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.support-button {
+  min-height: 38px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--accent-02) 18%, var(--main));
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.support-button:hover:not(:disabled) {
+  border-color: var(--accent-01);
+  box-shadow: 0 0 10px rgba(44, 177, 254, 0.22);
+  transform: translateY(-1px);
+}
+
+.support-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.support-error {
+  color: #ffb4b4;
+  font-size: 0.78rem;
+  margin-top: 8px;
+}
 .incident-feed {
   flex: 1 1 auto;
   min-height: 0;

@@ -24,13 +24,13 @@ export async function authedFetch(
   init: RequestInit = {} // paramètres optionnels (method, body, etc.)
 ) {
 
-  // 1️⃣ On récupère le token JWT via Clerk
+  // 1. On récupère le token JWT via Clerk
   const token = await getToken();
 
   // Si aucun token -> utilisateur non authentifié
   if (!token) throw new Error("No Clerk token");
 
-  // 2️⃣ On construit les headers HTTP
+  // 2. On construit les headers HTTP
   // On part des headers existants (si fournis)
   const headers = new Headers(init.headers);
 
@@ -40,6 +40,6 @@ export async function authedFetch(
   // Si Content-Type n’est pas défini -> on met JSON par défaut
   if (!headers.has("Content-Type")) headers.set("Content-Type", "application/json");
 
-  // 3️⃣ On fait la requête fetch en injectant les headers modifiés
+  // 3. On fait la requête fetch en injectant les headers modifiés
   return fetch(url, { ...init, headers });
 }

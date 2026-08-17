@@ -46,6 +46,8 @@ function coordKey(lat: number, lng: number, decimals = 5) {
   return `${Math.round(lat * f) / f},${Math.round(lng * f) / f}`;
 }
 
+// COORDONNÉES ARRONDIES:
+// CALCUL D'UN ANGLE STABLE:
 // hashToUnit : transforme une string (id) en nombre entre 0 et 1
 // -> sert à donner un angle déterministe à chaque point (stable à chaque rendu)
 function hashToUnit(str: string) {
@@ -57,6 +59,7 @@ function hashToUnit(str: string) {
   return (h >>> 0) / 4294967295;
 }
 
+// CONVERSION DE M EN DEGRE:
 // metersToDegrees : Leaflet utilise degrés lat/lng, mais le jitter est en mètres
 // -> convertit “mètres” en “degrés” en tenant compte de la latitude
 function metersToDegrees(m: number, lat: number) {
@@ -293,7 +296,7 @@ export default function MapView({
                 fillOpacity: 0.5,
               }}
             > 
-              {/* Tooltip au survol */}
+              {/* Tooltip au survol: SON PARENT EST CIRCLE MARKER*/}
               <Tooltip direction="top" offset={[0, -6]} opacity={1}>
                 <div>
                   <div>{inc.category ?? "Unknown"}</div>
