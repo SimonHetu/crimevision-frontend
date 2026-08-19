@@ -484,6 +484,13 @@ body {
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.26);
 }
 
+.payment-result-image {
+  display: block;
+  width: min(180px, 48vw);
+  height: auto;
+  margin: 0 0 22px;
+}
+
 .payment-result-eyebrow {
   color: var(--accent-01);
   font-weight: 800;
@@ -545,3 +552,4 @@ body {
   color: white;
   border: 1px solid var(--border);
 }
+
