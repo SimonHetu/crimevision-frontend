@@ -22,6 +22,7 @@ import AppLayout from "../layouts/AppLayout";
 import HomePage from "../pages/HomePage";
 import DashboardPage from "../pages/DashboardPage";
 import PrivacyPage from "../pages/PrivacyPage";
+import PaymentResultPage from "../pages/PaymentResultPage";
 
 // Composant personnalisé qui protège une route
 // Vérifie si l'utilisateur est authentifié avant d'accéder à la page
@@ -74,6 +75,11 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route path="/support/success" element={<PaymentResultPage kind="support" status="success" />} />
+        <Route path="/support/cancel" element={<PaymentResultPage kind="support" status="cancel" />} />
+        <Route path="/billing/success" element={<PaymentResultPage kind="billing" status="success" />} />
+        <Route path="/billing/cancel" element={<PaymentResultPage kind="billing" status="cancel" />} />
 
         {/* Page Privacy (publique) */}
         <Route path="/privacy" element={<PrivacyPage />} />
