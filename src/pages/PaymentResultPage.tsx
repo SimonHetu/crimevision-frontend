@@ -1,4 +1,5 @@
 import { Link, useSearchParams } from "react-router-dom";
+import supportHeart from "../assets/crimevision_support.png";
 
 type PaymentResultPageProps = {
   kind: "support" | "billing";
@@ -40,6 +41,9 @@ export default function PaymentResultPage({ kind, status }: PaymentResultPagePro
   return (
     <section className="payment-result" aria-labelledby="payment-result-title">
       <div className="payment-result-card">
+        {kind === "support" ? (
+          <img className="payment-result-image" src={supportHeart} alt="CrimeVision support heart" />
+        ) : null}
         <div className="payment-result-eyebrow">{content.eyebrow}</div>
         <h1 id="payment-result-title">{content.title}</h1>
         <p>{content.body}</p>
