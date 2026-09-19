@@ -1,35 +1,15 @@
-// Sidebar.tsx = panneau de filtres + état global visible (statut / couches / filtres)
-// Rôle :
-//  - Afficher le nombre d’incidents/PDQs + le nombre filtré
-//  - Permettre de toggler l’affichage des PDQs (layer map)
-//  - Gérer les filtres (année, mois, catégorie) via des checkboxes
-//  - Supporter "All" (tout sélectionner/désélectionner) pour chaque groupe
-//  - Fournir un bouton "Clear all" (reset des filtres à vide)
-
-// =========================================================
-// IMPORTS + TYPES
-// =========================================================
 import React from "react";
 import type { Incident } from "../components/services/incidents";
 import type { Pdq } from "../components/services/pdq";
-
-// Filters = état des filtres : on utilise des Set pour des tests rapides
 type Filters = {
   years: Set<number>;
-  months: Set<number>;      // months stocke les index 0..11
+  months: Set<number>;
   categories: Set<string>;
 };
 
-
-// Props = tout vient du parent (Sidebar est "dumb UI"):
-// - données (incidents/pdqs) + loading
-// - options (availableYears/categories)
-// - état filtres + setFilters (state lifté dans le parent)
-// - info de rendu (filteredCount)
-// - toggle PDQ (showPdqs + setShowPdqs)
-// - helpers "All" calculés par le parent + fonctions toggleAll*
-
 type Props = {
+  title?: string;
+  subtitle?: string;
   incidents: Incident[];
   pdqs: Pdq[];
   loading: boolean;
@@ -41,12 +21,14 @@ type Props = {
   setFilters: React.Dispatch<React.SetStateAction<Filters>>;
 
   filteredCount: number;
-
-  // PDQ toggle
+  selectedDate?: string;
+  setSelectedDate?: React.Dispatch<React.SetStateAction<string>>;
+  dateMode?: "day" | "month";
+  setDateMode?: React.Dispatch<React.SetStateAction<"day" | "month">>;
+  showDaySelector?: boolean;
+  showLayerControls?: boolean;
   showPdqs: boolean;
   setShowPdqs: React.Dispatch<React.SetStateAction<boolean>>;
-
-  // "All" as a toggle (checked = everything selected)
   isAllYearsSelected: boolean;
   isAllMonthsSelected: boolean;
   isAllCategoriesSelected: boolean;
@@ -55,25 +37,16 @@ type Props = {
   toggleAllMonths: () => void;
   toggleAllCategories: () => void;
 };
-
-// Labels de mois affichés à l’écran (index = mois dans filters.months)
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-
-// Helper immuable : on ne modifie pas le Set reçu (important pour React state)
-// -> on clone (new Set) puis on add/delete
 function toggleInSet<T>(set: Set<T>, value: T) {
   const next = new Set(set);
   if (next.has(value)) next.delete(value);
   else next.add(value);
   return next;
 }
-
-
-// =========================================================
-// COMPOSANT
-// =========================================================
 export default function Sidebar({
+  title = "CrimeVision",
+  subtitle = "Montréal map",
   incidents,
   pdqs,
   loading,
@@ -82,6 +55,12 @@ export default function Sidebar({
   filters,
   setFilters,
   filteredCount,
+  selectedDate = "",
+  setSelectedDate,
+  dateMode = "day",
+  setDateMode,
+  showDaySelector = false,
+  showLayerControls = true,
 
   showPdqs,
   setShowPdqs,
@@ -94,16 +73,15 @@ export default function Sidebar({
   toggleAllCategories,
 }: Props) {
   return (
-    // <aside> = élément sémantique "sidebar"
     <aside className="sidebar">
 
-      {/* Header */}
+      
       <div className="sidebar-header">
-        <div className="sidebar-title">CrimeVision</div>
-        <div className="sidebar-subtitle">Montréal map</div>
+        <div className="sidebar-title">{title}</div>
+        <div className="sidebar-subtitle">{subtitle}</div>
       </div>
 
-      {/* STATUS : loading + compteurs */}
+      
       <div className="sidebar-section">
         <div className="sidebar-label">Status</div>
         <div className="sidebar-card">
@@ -112,12 +90,12 @@ export default function Sidebar({
           ) : (
             <div>
 
-              {/* total brut */}
+              
               <div>
                 {incidents.length} incidents • {pdqs.length} PDQs
               </div>
 
-              {/* nombre après filtres */}
+              
               <div style={{ marginTop: 6, opacity: 0.8 }}>
                 Showing: <b>{filteredCount}</b>
               </div>
@@ -126,22 +104,50 @@ export default function Sidebar({
         </div>
       </div>
 
-      {/* MAP LAYERS : toggle PDQ */}
-      <div className="sidebar-section">
-        <div className="sidebar-label">Map layers</div>
-        <div className="sidebar-card">
-          <label className="check" style={{ justifyContent: "space-between" }}>
-            <span>PDQs</span>
+      {showDaySelector && setSelectedDate ? (
+        <div className="sidebar-section">
+          <div className="sidebar-label">Date</div>
+          <div className="sidebar-card date-selector-card">
             <input
-              type="checkbox"
-              checked={showPdqs}
-              onChange={() => setShowPdqs((v) => !v)}
+              className="day-input"
+              type={dateMode === "month" ? "month" : "date"}
+              value={dateMode === "month" ? selectedDate.slice(0, 7) : selectedDate}
+              onChange={(event) => {
+                const value = event.target.value;
+                setSelectedDate(dateMode === "month" ? `${value}-01` : value);
+              }}
             />
-          </label>
+            {setDateMode ? (
+              <label className="check month-mode-check">
+                <input
+                  type="checkbox"
+                  checked={dateMode === "month"}
+                  onChange={(event) => setDateMode(event.target.checked ? "month" : "day")}
+                />
+                <span>Month</span>
+              </label>
+            ) : null}
+          </div>
         </div>
-      </div>
+      ) : null}
 
-      {/* YEAR : "All" + liste des années disponibles */}
+      {showLayerControls ? (
+        <div className="sidebar-section">
+          <div className="sidebar-label">Map layers</div>
+          <div className="sidebar-card">
+            <label className="check" style={{ justifyContent: "space-between" }}>
+              <span>PDQs</span>
+              <input
+                type="checkbox"
+                checked={showPdqs}
+                onChange={() => setShowPdqs((v) => !v)}
+              />
+            </label>
+          </div>
+        </div>
+      ) : null}
+
+      
       <div className="sidebar-section">
         <div className="sidebar-label">Year</div>
         <div className="sidebar-card">
@@ -165,7 +171,7 @@ export default function Sidebar({
         </div>
       </div>
 
-      {/* MONTH : "All" + 12 mois (index 0..11) */}
+      
       <div className="sidebar-section">
         <div className="sidebar-label">Month</div>
         <div className="sidebar-card">
@@ -191,7 +197,7 @@ export default function Sidebar({
         </div>
       </div>
 
-      {/* CATEGORY : "All" + liste des catégories disponibles */}
+      
       <div className="sidebar-section">
         <div className="sidebar-label">Category</div>
         <div className="sidebar-card">
@@ -221,7 +227,7 @@ export default function Sidebar({
         </div>
       </div>
       
-      {/* RESET : remet tous les sets à vide (aucun filtre sélectionné) */}
+      
       <div className="sidebar-section">
         <button
           className="map-btn"
