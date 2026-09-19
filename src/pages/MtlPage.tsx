@@ -1,5 +1,5 @@
 import CityMapPage from "./CityMapPage";
 
-export default function HomePage() {
+export default function MtlPage() {
   return <CityMapPage city="mtl" />;
 }

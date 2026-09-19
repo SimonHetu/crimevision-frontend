@@ -21,7 +21,6 @@ body {
   color: white;
 }
 
-
 .title {
   color: var(--accent-02);
   flex: 1;
@@ -40,9 +39,6 @@ body {
   font-size: 1.2rem;
   text-decoration: none;
 }
-
-
-/* =============================================================== */
 
 .app-layout {
   height: 100%;
@@ -71,11 +67,6 @@ body {
   background: linear-gradient(180deg, var(--main) 80%, var(--accent-mix));
 }
 
-
-/* =============================================================== */
-/* MAIN PAGE LAYOUT */
-/* =============================================================== */
-
 .shell {
   flex: 1;
   min-height: 0;
@@ -98,7 +89,6 @@ body {
   overflow-y: auto;
 }
 
-
 .main {
   flex: 1;
   display: flex;
@@ -107,10 +97,6 @@ body {
   align-items: stretch;
   gap: 16px;
 }
-
-/* =============================================================== */
-/* MAP */
-/* =============================================================== */
 
 .map.leaflet-container {
   background: var(--main) !important;
@@ -134,10 +120,6 @@ body {
   height: 100%;
   width: 100%;
 }
-
-/* =============================================================== */
-/* RIGHT PANEL + FEED */
-/* =============================================================== */
 
 .right-panel {
   flex: 0 0 clamp(260px, 22vw, 340px);
@@ -261,10 +243,6 @@ body {
     0 0 12px rgba(99, 128, 254, 0.25);
 }
 
-/* =============================================================== */
-/* SHARED BUTTON */
-/* =============================================================== */
-
 .map-btn {
   background-color: var(--main);
   color: var(--accent-02);
@@ -282,10 +260,6 @@ body {
   color: var(--accent-02);
   transform: translateY(-1px);
 }
-
-/* =============================================================== */
-/* FILTER CHECKS */
-/* =============================================================== */
 
 .check {
   display: flex;
@@ -320,10 +294,6 @@ body {
   overflow: auto;
   padding-right: 6px;
 }
-
-/* =============================================================== */
-/* HOME LOCATION PANEL */
-/* =============================================================== */
 
 .home-location-panel {
   padding: 10px;
@@ -365,10 +335,6 @@ body {
   font-size: 0.9rem;
 }
 
-
-/*===================================================*/
-/* FOOTER*/
-/*===================================================*/
 .app-footer {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   margin-top: auto;
@@ -392,10 +358,6 @@ body {
   opacity: 0.85;
 }
 
-
-/*===================================================*/
-/* LOGO */
-/*===================================================*/
 .sidebar-brand {
   display: flex;
   align-items: center;
@@ -414,11 +376,6 @@ body {
   object-fit: cover;
 }
 
-
-
-/* =============================================================== */
-/* MOBILE RESPONSIVE */
-/* =============================================================== */
 @media (max-width: 900px) {
 
   .page-content {
@@ -431,13 +388,11 @@ body {
     flex-direction: column;
   }
 
-
   .shell {
     flex-direction: column;
     overflow: visible;
     
   }
-
 
   .sidebar {
     width: 100%;
@@ -448,11 +403,9 @@ body {
     overflow-y: auto;
   }
 
-
   .map-wrapper {
     min-height: 50vh;
   }
-
 
   .right-panel {
     width: 100%;
@@ -553,3 +506,72 @@ body {
   border: 1px solid var(--border);
 }
 
+.date-selector-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.day-input {
+  min-width: 0;
+  width: 100%;
+  min-height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.22);
+  color: white;
+  padding: 0 10px;
+  font: inherit;
+  color-scheme: dark;
+}
+
+.month-mode-check {
+  white-space: nowrap;
+  padding-right: 0;
+}
+.city-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.topbar-action {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--main) 88%, var(--accent-02) 12%);
+  color: var(--offwhite);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 800;
+  line-height: 1;
+  padding: 0 12px;
+  text-decoration: none;
+  transition: transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.topbar-action:hover,
+.topbar-action.is-active {
+  border-color: var(--accent-01);
+  color: white;
+  box-shadow: 0 0 10px rgba(44, 177, 254, 0.22);
+  transform: translateY(-1px);
+}
+.leaflet-tile-pane {
+  will-change: transform;
+}
+
+.leaflet-container .leaflet-tile {
+  border: 0 !important;
+  outline: 1px solid transparent;
+  backface-visibility: hidden;
+}
+
+.leaflet-container .leaflet-tile-loaded {
+  opacity: 1;
+}
