@@ -5,8 +5,19 @@ export type Incident = {
   latitude: number;
   longitude: number;
   category?: string;
+  source?: string;
+  sourceId?: string;
+  sourceCategory?: string;
   date?: string;
-  pdqId?: number;
+  occurredAt?: string | null;
+  reportedAt?: string | null;
+  pdqId?: number | null;
+  city?: string | null;
+  borough?: string | null;
+  precinct?: string | null;
+  locationType?: string | null;
+  premiseType?: string | null;
+  suspectRace?: string | null;
 };
 
 type ApiResponse<T> = {
