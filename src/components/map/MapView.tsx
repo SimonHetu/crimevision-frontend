@@ -194,6 +194,7 @@ export default function MapView({
                 <div>
                   <div>{inc.category ?? "Unknown"}</div>
                   <div>{inc.date ?? ""}</div>
+                  <div>Suspect race: {inc.suspectRace ?? "Unknown"}</div>
                   <div>id: {inc.id}</div>
 
                   
@@ -224,6 +225,7 @@ export default function MapView({
               <div>
                 <div>{inc.category ?? "Unknown"}</div>
                 <div>{inc.date ?? ""}</div>
+                <div>Suspect race: {inc.suspectRace ?? "Unknown"}</div>
                 <div>id: {inc.id}</div>
                 {(inc as any).groupSize > 1 && (
                   <div>Overlaps here: {(inc as any).groupSize}</div>
