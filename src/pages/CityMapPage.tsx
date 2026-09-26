@@ -21,6 +21,7 @@ type CityConfig = {
   initialZoom: number;
   minZoom: number;
   showPdqs: boolean;
+  defaultShowPdqs: boolean;
   showNear: boolean;
   showDaySelector: boolean;
   defaultDate?: string;
@@ -28,6 +29,10 @@ type CityConfig = {
   defaultSelectAll: boolean;
   limit: number;
   defaultMapStyle: "streets" | "satellite";
+  dataContext: {
+    title: string;
+    body: string;
+  };
 };
 
 const CITY_CONFIGS: Record<CityKey, CityConfig> = {
@@ -41,12 +46,17 @@ const CITY_CONFIGS: Record<CityKey, CityConfig> = {
     initialZoom: 11,
     minZoom: 11,
     showPdqs: true,
+    defaultShowPdqs: false,
     showNear: true,
     showDaySelector: false,
     defaultDateMode: "day",
     defaultSelectAll: false,
     limit: 30000,
     defaultMapStyle: "streets",
+    dataContext: {
+      title: "Montréal SPVM criminal acts",
+      body: "This map uses public SPVM criminal acts data for incidents registered in Montréal. The source describes the dataset as the list of criminal acts recorded by the Service de police de la Ville de Montréal; CrimeVision checks it daily and keeps a one-day buffer so late source updates can settle before they appear here. The data includes offence categories, dates, time periods, PDQ values, and privacy-protected generalized locations rather than exact addresses.",
+    },
   },
   nyc: {
     key: "nyc",
@@ -59,6 +69,7 @@ const CITY_CONFIGS: Record<CityKey, CityConfig> = {
     initialZoom: 11,
     minZoom: 11,
     showPdqs: false,
+    defaultShowPdqs: false,
     showNear: false,
     showDaySelector: true,
     defaultDate: "2026-06-30",
@@ -66,6 +77,10 @@ const CITY_CONFIGS: Record<CityKey, CityConfig> = {
     defaultSelectAll: false,
     limit: 30000,
     defaultMapStyle: "streets",
+    dataContext: {
+      title: "NYPD complaint incidents",
+      body: "This map uses NYPD complaint incident-level data from NYC Open Data. The current feed includes valid felony, misdemeanor, and violation crimes reported to the NYPD for complete quarters in the current year, while the historic feed covers prior years and is updated annually. CrimeVision shows offense category, occurrence and report timing, borough, precinct, location and premise details, and victim or suspect fields when the source provides them.",
+    },
   },
 };
 
@@ -108,7 +123,7 @@ export default function CityMapPage({ city = "mtl" }: { city?: CityKey }) {
   const [syncedUser, setSyncedUser] = useState(false);
   const [homeRadiusM, setHomeRadiusM] = useState<number | null>(null);
   const [homeStatus, setHomeStatus] = useState<HomeStatus>("unknown");
-  const [showPdqs, setShowPdqs] = useState(cityConfig.showPdqs);
+  const [showPdqs, setShowPdqs] = useState(cityConfig.defaultShowPdqs);
 
   const [supportLoading, setSupportLoading] = useState<SupportTier | null>(null);
   const [supportError, setSupportError] = useState("");
@@ -117,7 +132,7 @@ export default function CityMapPage({ city = "mtl" }: { city?: CityKey }) {
   useEffect(() => {
     setSelectedDate(cityConfig.defaultDate ?? "");
     setDateMode(cityConfig.defaultDateMode);
-    setShowPdqs(cityConfig.showPdqs);
+    setShowPdqs(cityConfig.defaultShowPdqs);
     setFeedTab("latest");
     setHomeStatus("unknown");
     setNearIncidents([]);
@@ -125,7 +140,7 @@ export default function CityMapPage({ city = "mtl" }: { city?: CityKey }) {
     setHomeRadiusM(null);
     initializedDefaultsForCity.current = null;
     setFilters({ years: new Set<number>(), months: new Set<number>(), categories: new Set<string>() });
-  }, [cityConfig.key, cityConfig.defaultDate, cityConfig.defaultDateMode, cityConfig.showPdqs]);
+  }, [cityConfig.key, cityConfig.defaultDate, cityConfig.defaultDateMode, cityConfig.defaultShowPdqs]);
 
   useEffect(() => {
     if (!isSignedIn || syncedUser) return;
@@ -409,7 +424,14 @@ export default function CityMapPage({ city = "mtl" }: { city?: CityKey }) {
     }
   }
   return (
-    <div className="shell">
+    <div className="city-page">
+      <section className="data-context" aria-label={`${cityConfig.subtitle} data context`}>
+        <div className="data-context-eyebrow">Data shown here</div>
+        <div className="data-context-title">{cityConfig.dataContext.title}</div>
+        <p>{cityConfig.dataContext.body}</p>
+      </section>
+
+      <div className="shell">
       <Sidebar
         title={cityConfig.title}
         subtitle={cityConfig.subtitle}
@@ -535,6 +557,7 @@ export default function CityMapPage({ city = "mtl" }: { city?: CityKey }) {
 
         </div>
       </main>
+      </div>
     </div>
   );
 }
