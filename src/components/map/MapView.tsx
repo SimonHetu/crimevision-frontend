@@ -39,6 +39,7 @@ type Props = {
   loading: boolean;
   highlightedId?: number | null;
   showPdqs?: boolean;
+  showSuspectRace?: boolean;
   homeLat?: number | null;
   homeLng?: number | null;
   homeRadiusM?: number | null;
@@ -55,6 +56,7 @@ export default function MapView({
   loading,
   highlightedId,
   showPdqs = true,
+  showSuspectRace = false,
   homeLat = null,
   homeLng = null,
   homeRadiusM = null,
@@ -194,7 +196,7 @@ export default function MapView({
                 <div>
                   <div>{inc.category ?? "Unknown"}</div>
                   <div>{inc.date ?? ""}</div>
-                  <div>Suspect race: {inc.suspectRace ?? "Unknown"}</div>
+                  {showSuspectRace && <div>Suspect race: {inc.suspectRace ?? "Unknown"}</div>}
                   <div>id: {inc.id}</div>
 
                   
@@ -225,7 +227,7 @@ export default function MapView({
               <div>
                 <div>{inc.category ?? "Unknown"}</div>
                 <div>{inc.date ?? ""}</div>
-                <div>Suspect race: {inc.suspectRace ?? "Unknown"}</div>
+                {showSuspectRace && <div>Suspect race: {inc.suspectRace ?? "Unknown"}</div>}
                 <div>id: {inc.id}</div>
                 {(inc as any).groupSize > 1 && (
                   <div>Overlaps here: {(inc as any).groupSize}</div>

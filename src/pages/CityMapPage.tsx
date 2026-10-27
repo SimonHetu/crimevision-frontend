@@ -23,6 +23,7 @@ type CityConfig = {
   showPdqs: boolean;
   defaultShowPdqs: boolean;
   showNear: boolean;
+  showSuspectRace: boolean;
   showDaySelector: boolean;
   defaultDate?: string;
   defaultDateMode: "day" | "month";
@@ -48,6 +49,7 @@ const CITY_CONFIGS: Record<CityKey, CityConfig> = {
     showPdqs: true,
     defaultShowPdqs: false,
     showNear: true,
+    showSuspectRace: false,
     showDaySelector: false,
     defaultDateMode: "day",
     defaultSelectAll: false,
@@ -71,6 +73,7 @@ const CITY_CONFIGS: Record<CityKey, CityConfig> = {
     showPdqs: false,
     defaultShowPdqs: false,
     showNear: false,
+    showSuspectRace: true,
     showDaySelector: true,
     defaultDate: "2026-06-30",
     defaultDateMode: "day",
@@ -468,6 +471,7 @@ export default function CityMapPage({ city = "mtl" }: { city?: CityKey }) {
           highlightedId={highlightedId}
           showPdqs={showPdqs}
           center={cityConfig.center}
+          showSuspectRace={cityConfig.showSuspectRace}
           bounds={cityConfig.bounds}
           initialZoom={cityConfig.initialZoom}
           minZoom={cityConfig.minZoom}
