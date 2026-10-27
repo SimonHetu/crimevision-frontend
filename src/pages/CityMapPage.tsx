@@ -6,6 +6,7 @@ import Sidebar from "../layouts/Sidebar";
 import IncidentFeed from "../components/ui/IncidentFeed";
 
 import { fetchIncidents, type Incident } from "../components/services/incidents";
+import { getLatestIncidentDefaults } from "../components/services/incidentDefaults";
 import { fetchPdqs, type Pdq } from "../components/services/pdq";
 import { startSupportCheckout, type SupportTier } from "../components/services/payments";
 export type CityKey = "mtl" | "nyc";
@@ -25,9 +26,7 @@ type CityConfig = {
   showNear: boolean;
   showSuspectRace: boolean;
   showDaySelector: boolean;
-  defaultDate?: string;
   defaultDateMode: "day" | "month";
-  defaultSelectAll: boolean;
   limit: number;
   defaultMapStyle: "streets" | "satellite";
   dataContext: {
@@ -52,7 +51,6 @@ const CITY_CONFIGS: Record<CityKey, CityConfig> = {
     showSuspectRace: false,
     showDaySelector: false,
     defaultDateMode: "day",
-    defaultSelectAll: false,
     limit: 30000,
     defaultMapStyle: "streets",
     dataContext: {
@@ -75,9 +73,7 @@ const CITY_CONFIGS: Record<CityKey, CityConfig> = {
     showNear: false,
     showSuspectRace: true,
     showDaySelector: true,
-    defaultDate: "2026-06-30",
-    defaultDateMode: "day",
-    defaultSelectAll: false,
+    defaultDateMode: "month",
     limit: 30000,
     defaultMapStyle: "streets",
     dataContext: {
@@ -113,7 +109,7 @@ export default function CityMapPage({ city = "mtl" }: { city?: CityKey }) {
   const [allIncidents, setAllIncidents] = useState<Incident[]>([]);
   const [pdqs, setPdqs] = useState<Pdq[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedDate, setSelectedDate] = useState(cityConfig.defaultDate ?? "");
+  const [selectedDate, setSelectedDate] = useState("");
   const [dateMode, setDateMode] = useState<"day" | "month">(cityConfig.defaultDateMode);
 
   const [nearIncidents, setNearIncidents] = useState<Incident[]>([]);
@@ -133,7 +129,7 @@ export default function CityMapPage({ city = "mtl" }: { city?: CityKey }) {
   const initializedDefaultsForCity = useRef<string | null>(null);
 
   useEffect(() => {
-    setSelectedDate(cityConfig.defaultDate ?? "");
+    setSelectedDate("");
     setDateMode(cityConfig.defaultDateMode);
     setShowPdqs(cityConfig.defaultShowPdqs);
     setFeedTab("latest");
@@ -143,7 +139,14 @@ export default function CityMapPage({ city = "mtl" }: { city?: CityKey }) {
     setHomeRadiusM(null);
     initializedDefaultsForCity.current = null;
     setFilters({ years: new Set<number>(), months: new Set<number>(), categories: new Set<string>() });
-  }, [cityConfig.key, cityConfig.defaultDate, cityConfig.defaultDateMode, cityConfig.defaultShowPdqs]);
+  }, [cityConfig.key, cityConfig.defaultDateMode, cityConfig.defaultShowPdqs]);
+
+  useEffect(() => {
+    // Browser Back can restore this page from the back/forward cache.
+    const resetSupportCheckout = () => setSupportLoading(null);
+    window.addEventListener("pageshow", resetSupportCheckout);
+    return () => window.removeEventListener("pageshow", resetSupportCheckout);
+  }, []);
 
   useEffect(() => {
     if (!isSignedIn || syncedUser) return;
@@ -184,10 +187,11 @@ export default function CityMapPage({ city = "mtl" }: { city?: CityKey }) {
   });
 
   useEffect(() => {
+    let cancelled = false;
     setLoading(true);
 
     const incidentParams = {
-      limit: cityConfig.showDaySelector && dateMode === "month" ? 100000 : cityConfig.limit,
+      limit: cityConfig.showDaySelector && selectedDate && dateMode === "month" ? 100000 : cityConfig.limit,
       source: cityConfig.source,
       city: cityConfig.city,
       date: cityConfig.showDaySelector && selectedDate ? (dateMode === "month" ? selectedDate.slice(0, 7) : selectedDate) : undefined,
@@ -199,6 +203,7 @@ export default function CityMapPage({ city = "mtl" }: { city?: CityKey }) {
       cityConfig.showPdqs ? fetchPdqs() : Promise.resolve([]),
     ])
       .then(([incData, pdqData]) => {
+        if (cancelled) return;
         const cleanedIncidents = incData
           .map((x) => ({
             ...x,
@@ -224,25 +229,20 @@ export default function CityMapPage({ city = "mtl" }: { city?: CityKey }) {
         setAllIncidents(cleanedIncidents);
         setPdqs(cleanedPdqs);
 
-        if (cityConfig.defaultSelectAll && initializedDefaultsForCity.current !== cityConfig.key) {
-          const nextYears = new Set<number>();
-          const nextMonths = new Set<number>();
-          const nextCategories = new Set<string>();
-          for (const inc of cleanedIncidents) {
-            const d = parseIncidentDate((inc as any).date);
-            if (d) {
-              nextYears.add(d.getFullYear());
-              nextMonths.add(d.getMonth());
-            }
-            nextCategories.add(String((inc as any).category ?? "Unknown"));
+        const defaultsKey = `${cityConfig.key}:${selectedDate}:${dateMode}`;
+        if (initializedDefaultsForCity.current !== defaultsKey) {
+          const { monthStart, ...defaults } = getLatestIncidentDefaults(cleanedIncidents);
+          setFilters(defaults);
+          initializedDefaultsForCity.current = defaultsKey;
+          if (cityConfig.showDaySelector && !selectedDate && monthStart) {
+            setSelectedDate(monthStart);
           }
-          setFilters({ years: nextYears, months: nextMonths, categories: nextCategories });
-          initializedDefaultsForCity.current = cityConfig.key;
         }
       })
       .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [cityConfig.city, cityConfig.defaultSelectAll, cityConfig.limit, cityConfig.showDaySelector, cityConfig.showPdqs, cityConfig.source, selectedDate, dateMode]);
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [cityConfig.key, cityConfig.city, cityConfig.limit, cityConfig.showDaySelector, cityConfig.showPdqs, cityConfig.source, selectedDate, dateMode]);
 
   const availableYears = useMemo(() => {
     const s = new Set<number>();
@@ -262,15 +262,6 @@ export default function CityMapPage({ city = "mtl" }: { city?: CityKey }) {
     return Array.from(s).sort((a, b) => a.localeCompare(b));
   }, [allIncidents]);
 
-  useEffect(() => {
-    if (!allIncidents.length || cityConfig.defaultSelectAll) return;
-
-    setFilters((f) => {
-      if (f.years.size || f.months.size || f.categories.size) return f;
-      return { years: new Set(), months: new Set(), categories: new Set() };
-
-    });
-  }, [allIncidents.length, availableYears, availableCategories, cityConfig.defaultSelectAll]);
   const allMonthsSet = useMemo(
     () => new Set<number>([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]),
     []
@@ -423,6 +414,7 @@ export default function CityMapPage({ city = "mtl" }: { city?: CityKey }) {
       await startSupportCheckout(getToken, tier);
     } catch (e: any) {
       setSupportError(e?.message ?? "Unable to open Stripe Checkout.");
+    } finally {
       setSupportLoading(null);
     }
   }
